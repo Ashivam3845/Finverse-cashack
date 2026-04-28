@@ -3,25 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #050511;
+  --foreground: #f8fafc;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-grid-pattern bg-fixed font-sans;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .glass-card {
+    @apply bg-cyber-glass backdrop-blur-xl border border-cyber-border rounded-2xl shadow-[0_8px_32px_0_rgba(0,240,255,0.1)];
+  }
+  
+  .text-neon-cyan {
+    @apply text-cyber-neon drop-shadow-[0_0_8px_rgba(0,240,255,0.8)];
+  }
+  
+  .text-neon-pink {
+    @apply text-cyber-pink drop-shadow-[0_0_8px_rgba(255,0,60,0.8)];
+  }
+
+  .btn-cyber {
+    @apply relative overflow-hidden bg-cyber-dark border border-cyber-neon text-cyber-neon font-bold py-3 px-8 rounded-xl transition-all duration-300 hover:bg-cyber-neon hover:text-cyber-dark hover:shadow-[0_0_20px_#00f0ff];
   }
 }

@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String                @id @default(cuid())
+  name                String?
+  email               String                @unique
+  passwordHash        String
+  trustScore          Int                   @default(100)
+  totalBalance        Float                 @default(5000.0)
+  digitalCoins        Int                   @default(0)
+  transactions        Transaction[]
+  investmentPortfolio InvestmentPortfolio?
+}
+
+model Transaction {
+  id             String   @id @default(cuid())
+  userId         String
+  amount         Float
+  category       String
+  date           DateTime @default(now())
+  cashbackEarned Float
+  coinsEarned    Int      @default(0)
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model InvestmentPortfolio {
+  id                    String @id @default(cuid())
+  userId                String @unique
+  totalInvested         Float  @default(0.0)
+  currentEstimatedValue Float  @default(0.0)
+  user                  User   @relation(fields: [userId], references: [id])
+}
