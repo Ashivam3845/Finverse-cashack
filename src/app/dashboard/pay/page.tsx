@@ -3,17 +3,15 @@
 import { useState } from "react";
 import { CreditCard, ArrowRight, ShieldCheck, Zap, RefreshCw } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { useSession } from "next-auth/react";
 
 export default function PayPage() {
-  const { data: session } = useSession();
   const [amount, setAmount] = useState("");
   const [recipient, setRecipient] = useState("");
   const [category, setCategory] = useState("PEER");
   const [isProcessing, setIsProcessing] = useState(false);
   const [successData, setSuccessData] = useState<{ cashback: number, coins: number, amt: number } | null>(null);
   
-  const { totalBalance, rdBalance, totalWealth, setBalances, digitalCoins, setDigitalCoins } = useAppStore();
+  const { totalBalance, rdBalance, totalWealth, setBalances, digitalCoins, setDigitalCoins, user } = useAppStore();
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +70,7 @@ export default function PayPage() {
                      <div className="flex justify-between items-end">
                         <div className="flex flex-col">
                            <span className="text-[10px] text-slate-400 uppercase tracking-widest">Operator Name</span>
-                           <span className="font-mono text-white text-sm uppercase tracking-wider">{session?.user?.name || 'Administrator'}</span>
+                           <span className="font-mono text-white text-sm uppercase tracking-wider">{user?.name || 'Administrator'}</span>
                         </div>
                         <div className="flex flex-col text-right">
                            <span className="text-[10px] text-slate-400 uppercase tracking-widest">Available</span>

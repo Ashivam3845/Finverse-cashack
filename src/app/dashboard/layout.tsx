@@ -1,20 +1,25 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useAppStore } from "@/lib/store";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { useAppStore } from "@/lib/store";
-import { Wallet, Activity, ShieldCheck, Home, LogOut, TrendingUp, User, Coins, Gamepad2, FileText, Crown, Briefcase, Settings, Settings2, ChevronDown, ArrowRightLeft } from "lucide-react";
+import { Wallet, Activity, Home, LogOut, TrendingUp, User, Coins, Gamepad2, FileText, Crown, Briefcase, Settings, ArrowRightLeft, ChevronDown } from "lucide-react";
 import { ChatBot } from "@/components/ChatBot";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
+  const { user, isAuthenticated, logout, totalBalance, rdBalance, totalWealth, digitalCoins } = useAppStore();
   const router = useRouter();
   const pathname = usePathname();
-  const { totalBalance, rdBalance, totalWealth, digitalCoins, setBalances, setDigitalCoins } = useAppStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -26,32 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
-  // Fetch true state from our API when dashboard mounts
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetch("/api/user/state")
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.user) {
-            setBalances(
-              data.user.totalBalance,
-              data.user.investmentPortfolio?.currentEstimatedValue || 0,
-              data.user.totalBalance + (data.user.investmentPortfolio?.currentEstimatedValue || 0)
-            );
-            setDigitalCoins(data.user.digitalCoins || 0);
-          }
-        })
-        .catch(console.error);
-    }
-  }, [status, setBalances, setDigitalCoins]);
-
-  if (status === "loading") {
+  if (!isAuthenticated) {
     return <div className="min-h-screen flex items-center justify-center bg-background"><div className="w-16 h-16 border-4 border-cyber-neon border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
@@ -65,6 +45,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Insights", href: "/dashboard/insights", icon: Activity },
     { name: "Profile", href: "/dashboard/profile", icon: User },
   ];
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <div className="flex h-screen bg-background overflow-hidden selection:bg-cyber-neon/30">
@@ -84,20 +69,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <link.icon className={`w-5 h-5 ${active ? 'text-cyber-neon' : ''}`} />
                 <span className="font-medium">{link.name}</span>
               </Link>
-            )
+            );
           })}
 
-          {session?.user?.email === "admin@finflow.com" && (
+          {user?.email === "admin@finflow.com" && (
             <Link href="/dashboard/admin" className={`flex items-center gap-3 px-4 py-3 mt-4 rounded-xl transition-all duration-300 ${pathname === '/dashboard/admin' ? 'bg-amber-500/10 border border-amber-500/50 text-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.15)]' : 'text-amber-500/50 hover:text-amber-400 hover:bg-amber-500/5'}`}>
               <Crown className="w-5 h-5" />
               <span className="font-bold">Master Control</span>
             </Link>
           )}
         </nav>
-
-        <div className="px-4 w-full relative z-10 mt-auto">
-           {/* Legacy disconnect removed in favor of top-right dropdown */}
-        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -136,10 +117,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   className="flex items-center gap-3 bg-slate-900 border border-slate-700 hover:border-cyber-neon/50 px-4 py-2 rounded-full transition-all"
                 >
                   <div className="w-8 h-8 rounded-full bg-cyber-pink overflow-hidden border border-cyber-pink">
-                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.email || 'default'}&backgroundColor=ff003c`} alt="Avatar" className="w-full h-full object-cover"/>
+                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || 'default'}&backgroundColor=ff003c`} alt="Avatar" className="w-full h-full object-cover"/>
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="font-bold text-white leading-tight">{session?.user?.name || 'Operator'}</span>
+                    <span className="font-bold text-white leading-tight">{user?.name || 'Operator'}</span>
                     <span className="text-[10px] text-slate-400 font-mono leading-tight flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-cyber-neon animate-pulse shadow-[0_0_5px_#00f0ff]"></div>
                       ONLINE
@@ -152,7 +133,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <div className="absolute right-0 mt-3 w-56 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden py-2 animate-in slide-in-from-top-2 z-50">
                      <div className="px-4 py-3 border-b border-slate-800 mb-2">
                        <p className="text-xs text-slate-500 font-mono">Connected as</p>
-                       <p className="text-sm font-bold text-white truncate">{session?.user?.email}</p>
+                       <p className="text-sm font-bold text-white truncate">{user?.email}</p>
                      </div>
                      <Link href="/dashboard/profile" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
                        <User className="w-4 h-4" /> Profile Matrix
@@ -164,7 +145,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                        <ArrowRightLeft className="w-4 h-4" /> Switch Account
                      </button>
                      <div className="h-px bg-slate-800 my-2"></div>
-                     <button onClick={() => signOut()} className="w-full flex items-center gap-3 px-4 py-2.5 text-rose-400 hover:bg-rose-500/10 hover:text-rose-500 transition-colors">
+                     <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-rose-400 hover:bg-rose-500/10 hover:text-rose-500 transition-colors">
                        <LogOut className="w-4 h-4" /> Terminate Session
                      </button>
                   </div>

@@ -4,31 +4,27 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
+import { registerUser } from "@/lib/auth-local";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-      if (res.ok) {
-        router.push("/login");
-      } else {
-        const data = await res.json();
-        setError(data.message || "Registration failed");
-      }
-    } catch (err) {
-      setError("An unexpected error occurred");
+    setLoading(true);
+    setError("");
+    const result = registerUser(name, email, password);
+    if (result.success) {
+      router.push("/login");
+    } else {
+      setError(result.error || "Registration failed.");
     }
+    setLoading(false);
   };
 
   return (
@@ -79,14 +75,15 @@ export default function Register() {
             <input
               type="password"
               required
+              minLength={6}
               className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyber-pink focus:ring-1 focus:ring-cyber-pink transition-all"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="btn-cyber w-full mt-2 !border-cyber-pink !text-cyber-pink hover:!bg-cyber-pink hover:!text-white hover:shadow-[0_0_20px_#ff003c]">
-            Generate Node ID
+          <button type="submit" disabled={loading} className="btn-cyber w-full mt-2 !border-cyber-pink !text-cyber-pink hover:!bg-cyber-pink hover:!text-white hover:shadow-[0_0_20px_#ff003c] disabled:opacity-50">
+            {loading ? "Registering..." : "Generate Node ID"}
           </button>
         </form>
 

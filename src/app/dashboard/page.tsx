@@ -3,18 +3,16 @@
 import { useAppStore } from "@/lib/store";
 import { Activity, ArrowRight, ShieldCheck, TrendingUp, Zap } from "lucide-react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 
 export default function DashboardHome() {
-  const { totalBalance, rdBalance, totalWealth } = useAppStore();
-  const { data: session } = useSession();
+  const { totalBalance, rdBalance, totalWealth, user } = useAppStore();
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
       <div className="flex items-end justify-between">
          <div>
             <h1 className="text-4xl font-bold font-display text-white mb-2">
-               Welcome back, <span className="text-cyber-neon">{session?.user?.name || 'Operator'}</span>
+               Welcome back, <span className="text-cyber-neon">{user?.name || 'Operator'}</span>
             </h1>
             <p className="text-slate-400">System systems nominal. Wealth accumulators active.</p>
          </div>

@@ -1,29 +1,32 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
+import { loginUser } from "@/lib/auth-local";
+import { useAppStore } from "@/lib/store";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAppStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    if (res?.error) {
-      setError(res.error);
-    } else {
+    setLoading(true);
+    setError("");
+    const result = loginUser(email, password);
+    if (result.success && result.user) {
+      login(result.user);
       router.push("/dashboard");
+    } else {
+      setError(result.error || "Login failed.");
     }
+    setLoading(false);
   };
 
   return (
@@ -69,8 +72,8 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="btn-cyber w-full mt-2">
-            Initialize Session
+          <button type="submit" disabled={loading} className="btn-cyber w-full mt-2 disabled:opacity-50">
+            {loading ? "Authenticating..." : "Initialize Session"}
           </button>
         </form>
 
