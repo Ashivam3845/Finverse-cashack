@@ -161,17 +161,18 @@ export default function ArenaPage() {
     if (digitalCoins < game.coinCost) return showToast(`Need ${game.coinCost} DigiCoins to play Cyber Flip!`, "error");
     setActiveGame("cyberflip");
     setTimeout(async () => {
-      const isWin = Math.random() < game.winRate; // 10%
+      const isWin = Math.random() < game.winRate;
       const rewardAmt = isWin ? game.reward : 0;
-      const data = await executeArenaAPI(game.coinCost, rewardAmt, game.name);
-      if (data.success) {
-        setDigitalCoins(data.newCoins);
-        setBalances(data.newBalance, rdBalance, data.newBalance + (totalWealth - totalBalance));
-        showToast(
-          isWin ? `🎉 FLIP WON! ₹${game.reward} added to your wallet!` : `Flip lost. Better luck next time!`,
-          isWin ? "success" : "error"
-        );
-      }
+      await executeArenaAPI(game.coinCost, rewardAmt, game.name);
+      // Compute state client-side
+      const newCoins = (digitalCoins ?? 0) - game.coinCost;
+      const newBalance = (totalBalance ?? 0) + rewardAmt;
+      setDigitalCoins(newCoins);
+      setBalances(newBalance, rdBalance ?? 0, newBalance + (rdBalance ?? 0));
+      showToast(
+        isWin ? `🎉 FLIP WON! ₹${game.reward} added to your wallet!` : `Flip lost. Better luck next time!`,
+        isWin ? "success" : "error"
+      );
       setActiveGame(null);
     }, 1500);
   };
@@ -188,20 +189,21 @@ export default function ArenaPage() {
     setSelectedCell(cellIndex);
     setIsMining(true);
     setTimeout(async () => {
-      const isWin = Math.random() < game.winRate; // 10%
+      const isWin = Math.random() < game.winRate;
       const winningIndex = isWin ? cellIndex : Math.floor(Math.random() * 9);
       setWinCell(winningIndex);
       setRevealedCells((prev) => [...prev, cellIndex]);
       const rewardAmt = isWin ? game.reward : 0;
-      const data = await executeArenaAPI(game.coinCost, rewardAmt, game.name);
-      if (data.success) {
-        setDigitalCoins(data.newCoins);
-        setBalances(data.newBalance, rdBalance, data.newBalance + (totalWealth - totalBalance));
-        showToast(
-          isWin ? `💰 JACKPOT! ₹${game.reward.toLocaleString()} uncovered!` : `Block empty. Try again!`,
-          isWin ? "success" : "error"
-        );
-      }
+      await executeArenaAPI(game.coinCost, rewardAmt, game.name);
+      // Compute state client-side
+      const newCoins = (digitalCoins ?? 0) - game.coinCost;
+      const newBalance = (totalBalance ?? 0) + rewardAmt;
+      setDigitalCoins(newCoins);
+      setBalances(newBalance, rdBalance ?? 0, newBalance + (rdBalance ?? 0));
+      showToast(
+        isWin ? `💰 JACKPOT! ₹${game.reward.toLocaleString()} uncovered!` : `Block empty. Try again!`,
+        isWin ? "success" : "error"
+      );
       setTimeout(() => {
         setIsMining(false);
         setMineGridOpen(false);
@@ -218,17 +220,18 @@ export default function ArenaPage() {
     if (digitalCoins < game.coinCost) return showToast(`Need ${game.coinCost} DigiCoins for Doom Spin!`, "error");
     setActiveGame("doomspin");
     setTimeout(async () => {
-      const isWin = Math.random() < game.winRate; // 10%
+      const isWin = Math.random() < game.winRate;
       const rewardAmt = isWin ? game.reward : 0;
-      const data = await executeArenaAPI(game.coinCost, rewardAmt, game.name);
-      if (data.success) {
-        setDigitalCoins(data.newCoins);
-        setBalances(data.newBalance, rdBalance, data.newBalance + (totalWealth - totalBalance));
-        showToast(
-          isWin ? `[7][7][7] DOOM JACKPOT! ₹${game.reward.toLocaleString()} INJECTED!` : `[2][9][4] Spin failed. Coins lost.`,
-          isWin ? "success" : "error"
-        );
-      }
+      await executeArenaAPI(game.coinCost, rewardAmt, game.name);
+      // Compute state client-side
+      const newCoins = (digitalCoins ?? 0) - game.coinCost;
+      const newBalance = (totalBalance ?? 0) + rewardAmt;
+      setDigitalCoins(newCoins);
+      setBalances(newBalance, rdBalance ?? 0, newBalance + (rdBalance ?? 0));
+      showToast(
+        isWin ? `[7][7][7] DOOM JACKPOT! ₹${game.reward.toLocaleString()} INJECTED!` : `[2][9][4] Spin failed. Coins lost.`,
+        isWin ? "success" : "error"
+      );
       setActiveGame(null);
     }, 3000);
   };
@@ -237,11 +240,10 @@ export default function ArenaPage() {
     if (digitalCoins < sub.cost) return showToast(`Need ${sub.cost} DigiCoins to redeem ${sub.label}!`, "error");
     setIsRedeeming(true);
     try {
-      const data = await executeArenaAPI(sub.cost, 0, `Subscription: ${sub.label}`);
-      if (data.success) {
-        setDigitalCoins(data.newCoins);
-        showToast(`✅ ${sub.label} subscription activated! Check your email for access.`, "success");
-      }
+      await executeArenaAPI(sub.cost, 0, `Subscription: ${sub.label}`);
+      // Deduct coins client-side
+      setDigitalCoins((digitalCoins ?? 0) - sub.cost);
+      showToast(`✅ ${sub.label} subscription activated! Check your email for access.`, "success");
     } finally {
       setIsRedeeming(false);
     }

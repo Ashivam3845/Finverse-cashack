@@ -15,26 +15,34 @@ export default function PayPage() {
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || Number(amount) <= 0 || Number(amount) > totalBalance || !recipient) return;
+    const amt = Number(amount);
+    if (!amt || amt <= 0 || amt > totalBalance || !recipient) return;
     
     setIsProcessing(true);
     try {
       const res = await fetch("/api/pay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: Number(amount), recipient, category }),
+        body: JSON.stringify({ amount: amt, recipient, category }),
       });
       const data = await res.json();
       
       if (res.ok && data.success) {
-        setBalances(data.newBalance, data.newRdBalance, data.newBalance + data.newRdBalance + (totalWealth - totalBalance - rdBalance));
-        setDigitalCoins(digitalCoins + data.coinsEarned);
-        setSuccessData({ cashback: data.cashback, coins: data.coinsEarned, amt: Number(amount) });
+        // Compute new balances client-side
+        const newBalance = totalBalance - amt;
+        const newRdBalance = rdBalance + data.cashback;   // cashback auto-routed to RD vault
+        const newWealth = newBalance + newRdBalance;
+
+        setBalances(newBalance, newRdBalance, newWealth);
+        setDigitalCoins((digitalCoins ?? 0) + (data.coinsEarned ?? 0));
+        setSuccessData({ cashback: data.cashback, coins: data.coinsEarned, amt });
         setAmount("");
         setRecipient("");
       } else {
         alert("Payment Gateway Failed: " + data.error);
       }
+    } catch (err) {
+      alert("Network error — please try again.");
     } finally {
       setIsProcessing(false);
     }
