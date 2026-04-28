@@ -91,22 +91,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
            <div className="flex gap-12 relative z-10">
               <div>
                 <p className="text-xs text-slate-400 font-mono mb-1 uppercase tracking-wider">Total Wealth</p>
-                <p className="text-xl font-bold text-white tracking-tight">₹{totalWealth.toLocaleString('en-IN', {minimumFractionDigits:2})}</p>
+                <p className="text-xl font-bold text-white tracking-tight">₹{(totalWealth ?? 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</p>
               </div>
               <div className="h-8 w-px bg-slate-800 self-center"></div>
               <div>
                 <p className="text-xs text-slate-400 font-mono mb-1 uppercase tracking-wider">Available Cash</p>
-                <p className="text-xl font-medium text-cyber-neon tracking-tight drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">₹{totalBalance.toLocaleString('en-IN', {minimumFractionDigits:2})}</p>
+                <p className="text-xl font-medium text-cyber-neon tracking-tight drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">₹{(totalBalance ?? 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</p>
               </div>
               <div className="h-8 w-px bg-slate-800 self-center"></div>
               <div>
                 <p className="text-xs text-slate-400 font-mono mb-1 uppercase tracking-wider">RD Balance</p>
-                <p className="text-xl font-medium text-cyber-pink tracking-tight drop-shadow-[0_0_5px_rgba(255,0,60,0.5)]">₹{rdBalance.toLocaleString('en-IN', {minimumFractionDigits:2})}</p>
+                <p className="text-xl font-medium text-cyber-pink tracking-tight drop-shadow-[0_0_5px_rgba(255,0,60,0.5)]">₹{(rdBalance ?? 0).toLocaleString('en-IN', {minimumFractionDigits:2})}</p>
               </div>
               <div className="h-8 w-px bg-slate-800 self-center"></div>
               <div className="flex flex-col items-center justify-center">
                 <p className="text-xs text-slate-400 font-mono mb-1 uppercase tracking-wider">Digital Coins</p>
-                <p className="text-xl font-bold text-yellow-400 tracking-tight flex items-center gap-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]"><Coins className="w-5 h-5"/>{digitalCoins}</p>
+                <p className="text-xl font-bold text-yellow-400 tracking-tight flex items-center gap-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]"><Coins className="w-5 h-5"/>{digitalCoins ?? 0}</p>
               </div>
            </div>
            

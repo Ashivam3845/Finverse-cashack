@@ -18,7 +18,7 @@ export default function DashboardHome() {
          </div>
          <div className="text-right hidden md:block">
             <p className="text-sm font-mono text-slate-500 uppercase">Secure Connection</p>
-            <p className="text-emerald-400 text-sm flex items-center justify-end gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div> Encrypted via NextAuth</p>
+            <p className="text-emerald-400 text-sm flex items-center justify-end gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block"></span> Secure &amp; Encrypted</p>
          </div>
       </div>
 
@@ -28,7 +28,7 @@ export default function DashboardHome() {
               <Activity className="w-24 h-24 text-cyber-neon" />
            </div>
            <p className="text-sm font-mono text-slate-400 uppercase tracking-widest mb-2 mt-4 relative z-10">Available Liquid</p>
-           <p className="text-4xl font-bold text-white tracking-tighter relative z-10">₹{totalBalance.toLocaleString('en-IN')}</p>
+           <p className="text-4xl font-bold text-white tracking-tighter relative z-10">₹{(totalBalance ?? 0).toLocaleString('en-IN')}</p>
         </div>
         
         <div className="glass-card p-6 border-t-2 border-t-cyber-pink relative overflow-hidden group hover:-translate-y-1 transition-transform">
@@ -36,13 +36,13 @@ export default function DashboardHome() {
               <TrendingUp className="w-24 h-24 text-cyber-pink" />
            </div>
            <p className="text-sm font-mono text-slate-400 uppercase tracking-widest mb-2 mt-4 relative z-10">Smart RD Vault</p>
-           <p className="text-4xl font-bold text-white tracking-tighter relative z-10">₹{rdBalance.toLocaleString('en-IN')}</p>
+           <p className="text-4xl font-bold text-white tracking-tighter relative z-10">₹{(rdBalance ?? 0).toLocaleString('en-IN')}</p>
            <p className="text-xs text-cyber-pink mt-2 relative z-10">Compounding Active @ 3% APY</p>
         </div>
 
         <div className="glass-card p-6 border-t-2 border-t-purple-500 relative overflow-hidden group hover:-translate-y-1 transition-transform">
            <p className="text-sm font-mono text-slate-400 uppercase tracking-widest mb-2 mt-4 relative z-10">Total Net Worth</p>
-           <p className="text-4xl font-bold text-white tracking-tighter relative z-10">₹{totalWealth.toLocaleString('en-IN')}</p>
+           <p className="text-4xl font-bold text-white tracking-tighter relative z-10">₹{(totalWealth ?? 0).toLocaleString('en-IN')}</p>
            <div className="h-2 w-full bg-slate-800 rounded-full mt-4 overflow-hidden relative z-10">
               <div className="h-full bg-gradient-to-r from-cyber-neon to-cyber-pink w-[70%]" />
            </div>
