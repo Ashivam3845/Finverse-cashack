@@ -1,6 +1,5 @@
 // Simple client-side auth using localStorage
 // Passwords are stored as a simple hash (for demo purposes)
-// In production, always use a proper backend auth system
 
 const USERS_KEY = 'finflow_users';
 
@@ -20,6 +19,13 @@ function simpleHash(str: string): string {
   return hash.toString(36);
 }
 
+// Hardcoded demo account — always available for judges/testing
+const DEMO_USER: StoredUser = {
+  name: 'Demo Operator',
+  email: 'demo@finflow.ai',
+  passwordHash: simpleHash('demo1234'),
+};
+
 function getUsers(): StoredUser[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -35,6 +41,10 @@ function saveUsers(users: StoredUser[]) {
 
 export function registerUser(name: string, email: string, password: string): { success: boolean; error?: string } {
   const users = getUsers();
+  // Block re-registration of demo account
+  if (email.toLowerCase() === DEMO_USER.email) {
+    return { success: false, error: 'Email already registered in the network.' };
+  }
   if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
     return { success: false, error: 'Email already registered in the network.' };
   }
@@ -44,6 +54,11 @@ export function registerUser(name: string, email: string, password: string): { s
 }
 
 export function loginUser(email: string, password: string): { success: boolean; user?: { name: string; email: string }; error?: string } {
+  // Check demo account first
+  if (email.toLowerCase() === DEMO_USER.email && simpleHash(password) === DEMO_USER.passwordHash) {
+    return { success: true, user: { name: DEMO_USER.name, email: DEMO_USER.email } };
+  }
+
   const users = getUsers();
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
   if (!user) {
