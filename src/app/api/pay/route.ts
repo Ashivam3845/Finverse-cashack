@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
     const cashback = Number((amount * randomPercent).toFixed(2));
     const coinsEarned = Math.floor(amount / 10);
-    const userEmail = session.user.email;
+    const userEmail = session.user.email!;
 
     // We do all this in a Prisma Transaction
     const result = await prisma.$transaction(async (tx) => {

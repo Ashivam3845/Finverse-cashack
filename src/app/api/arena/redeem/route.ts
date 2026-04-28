@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid arena data" }, { status: 400 });
     }
 
-    const userEmail = session.user.email;
+    const userEmail = session.user.email!;
 
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({

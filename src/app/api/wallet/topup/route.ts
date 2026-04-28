@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
-    const userEmail = session.user.email;
+    const userEmail = session.user.email!;
 
     const userTypeCheck = await prisma.user.findUnique({
       where: { email: userEmail },
