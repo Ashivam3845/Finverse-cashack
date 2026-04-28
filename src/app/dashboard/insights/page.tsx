@@ -141,7 +141,8 @@ export default function InsightsPage() {
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
                   itemStyle={{ color: '#00f0ff' }}
-                  formatter={(value: number) => [`₹${value}`, "Projected Vault"]}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formatter={(value: any) => [`₹${value ?? 0}`, "Projected Vault"]}
                 />
                 <Line 
                   type="monotone" 
